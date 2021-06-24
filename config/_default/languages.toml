@@ -1,0 +1,11 @@
+
+[en]
+  title = "MekOps"
+  LanguageName = "English"
+  weight = 1
+
+[pl]
+  title = "MekOps"
+  LanguageName = "Polski"
+  weight = 2
+  

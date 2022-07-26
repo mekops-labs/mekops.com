@@ -1,26 +1,22 @@
 +++
 title = "About"
-description = "Hugo, the world's fastest framework for building websites"
-date = "2019-02-28"
-aliases = ["about-us", "about-hugo", "contact"]
-author = "Hugo Authors"
+description = "About me"
+date = "2022-07-26"
+aliases = ["about-me", "contact"]
+author = "Kamil Wcisło"
 comments = false
 +++
 
-Written in Go, Hugo is an open source static site generator available under the [Apache Licence 2.0.](https://github.com/gohugoio/hugo/blob/master/LICENSE) Hugo supports TOML, YAML and JSON data file types, Markdown and HTML content files and uses shortcodes to add rich content. Other notable features are taxonomies, multilingual mode, image processing, custom output formats, HTML/CSS/JS minification and support for Sass SCSS workflows.
+## About myself
 
-Hugo makes use of a variety of open source projects including:
+Hello everybody,
 
-* https://github.com/yuin/goldmark
-* https://github.com/alecthomas/chroma
-* https://github.com/muesli/smartcrop
-* https://github.com/spf13/cobra
-* https://github.com/spf13/viper
+my name is Kamil and I’m embedded systems, distributed computing and cloud enthusiast. Especially I’m interested in those Linux and/or RTOS powered. During my free time I tend to play with them a little ;).
 
-Hugo is ideal for blogs, corporate websites, creative portfolios, online magazines, single page applications or even a website with thousands of pages.
+I’ve decided to share some of my work and my passion, so I’m starting this online notebook.
 
-Hugo is for people who want to hand code their own website without worrying about setting up complicated runtimes, dependencies and databases.
+## About this site
 
-Websites built with Hugo are extremelly fast, secure and can be deployed anywhere including, AWS, GitHub Pages, Heroku, Netlify and any other hosting provider.
+I’m treating this site as my hobby, so expect changes. It's powered by [Hugo](https://gohugo.io) with the [Clarity theme](https://github.com/chipzoller/hugo-clarity).
 
-Learn more and contribute on [GitHub](https://github.com/gohugoio).
+> *Disclaimer:* All opinions on this site are my own and they are not related in any way to my currrent or former employer

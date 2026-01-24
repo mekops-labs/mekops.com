@@ -8,3 +8,17 @@ DefaultContentLanguage = "en"
 category = "categories"
 tag = "tags"
 series = "series"
+
+[params.giscus]
+  enable = true
+  repo = "mekops-labs/mekops.com"
+  repoId = "R_kgDORAgYpw"
+  category = "Comments"
+  categoryId = "DIC_kwDORAgYp84C1Yd9"
+  mapping = "pathname"
+  reactionsEnabled = "1"
+  emitMetadata = "0"
+  inputPosition = "bottom"
+  theme = "preferred_color_scheme"
+  lang = "en"
+  loading = "lazy"

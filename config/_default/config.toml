@@ -4,7 +4,7 @@ baseurl = "https://mekops.com/"  # Include trailing slash
 # title = "Clarity"  # Edit directly from config/_default/languages.toml # alternatively, uncomment this and remove `title` entry from the aforemention file.
 copyright = "Copyright © 2022, MekOps"
 # canonifyurls = true
-paginate = 10
+pagination.pagerSize = 10
 theme = "hugo-clarity"
 
 DefaultContentLanguage = "en"

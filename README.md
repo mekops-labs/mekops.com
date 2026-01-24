@@ -1,23 +1,55 @@
-# hugoBasicExample
+# MekOps.com
 
-This repository offers an example site for [Hugo](https://gohugo.io/) and also it provides the default content for demos hosted on the [Hugo Themes Showcase](https://themes.gohugo.io/).
+> **The Digital Headquarters of MekOps.**
+>
+> *Where Cloud-Native meets Bare Metal.*
 
-# Using
+![License: CC BY 4.0](https://img.shields.io/badge/License-CC%20BY%204.0-lightgrey.svg)
+![Built With: Hugo](https://img.shields.io/badge/Built%20With-Hugo-0079d3.svg)
+![Theme: Clarity](https://img.shields.io/badge/Theme-Clarity-success.svg)
 
-1. [Install Hugo](https://gohugo.io/overview/installing/)
-2. Clone this repository
-```bash
-git clone https://github.com/gohugoio/hugoBasicExample.git
-cd hugoBasicExample
-```
-3. Clone the repository you want to test. If you want to test all Hugo Themes then follow the instructions provided [here](https://github.com/gohugoio/hugoThemes#installing-all-themes)
-4. Run Hugo and select the theme of your choosing
-```bash
-hugo server -t YOURTHEME
-```
-5. Under `/content/` this repository contains the following:
-- A section called `/post/` with sample markdown content
-- A headless bundle called `homepage` that you may want to use for single page applications. You can find instructions about headless bundles over [here](https://gohugo.io/content-management/page-bundles/#headless-bundle)
-- An `about.md` that is intended to provide the `/about/` page for a theme demo
-6. If you intend to build a theme that does not fit in the content structure provided in this repository, then you are still more than welcome to submit it for review at the [Hugo Themes](https://github.com/gohugoio/hugoThemes/issues) respository
+## 📡 About The Project
 
+This repository contains the source code for [**mekops.com**](https://mekops.com), my personal portfolio and engineering blog.
+
+## 🛠 Tech Stack
+
+* **Generator:** [Hugo](https://gohugo.io) (Fast, static, secure).
+* **Theme:** [Hugo Clarity](https://github.com/chipzoller/hugo-clarity) (Enterprise-grade, documentation-focused design).
+* **Comments:** [Giscus](https://giscus.app) (GitHub Discussions integration).
+* **Analytics:** [GoatCounter / Cloudflare] (Privacy-first).
+
+## 🚀 Quick Start
+
+To run this site locally:
+
+1.  **Clone the repository:**
+    ```bash
+    git clone --recurse-submodules [https://github.com/mekops-labs/mekops.com.git](https://github.com/mekops-labs/mekops.com.git)
+    cd mekops.com
+    ```
+
+2.  **Update Theme (Optional):**
+    If the theme submodule is empty:
+    ```bash
+    git submodule update --init --recursive
+    ```
+
+3.  **Run Hugo Server:**
+    ```bash
+    hugo server -D
+    ```
+
+4.  **View:** Open `http://localhost:1313` in your browser.
+
+## 📂 Customization & Overrides
+
+* `config/_default`: Main site configuration (Menus, Params).
+* `static/`: Images, logos, and global assets.
+* `layouts/`: Theme overrides (e.g., custom Giscus partials).
+
+## © License
+
+The content of this website (blog posts, images, documentation) is licensed under the **Creative Commons Attribution 4.0 International License (CC BY 4.0)**.
+
+The Clarity theme is licensed under **MIT**.

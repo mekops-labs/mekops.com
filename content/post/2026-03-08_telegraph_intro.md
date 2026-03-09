@@ -3,8 +3,12 @@ title: "Project TELEGRAPH (Part 1): Rescuing a $15 LED Matrix from Software Purg
 author: Kamil Wcisło
 date: 2026-03-08T12:00:00+01:00
 draft: false
+toc: true
 tags: ["Telegraph", "MekOps", "Reverse engineering", "Electronics"]
-summary: "Sometimes the best hardware hacking projects start because you refuse to accept terrible UX."
+series: telegraph
+thumbnail: images/20260308/clock.webp
+summary: |
+    Sometimes the best hardware hacking projects start because you refuse to accept terrible UX.
 ---
 
 ## 1. Introduction: The Target

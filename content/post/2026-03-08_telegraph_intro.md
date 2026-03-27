@@ -4,7 +4,7 @@ author: Kamil Wcisło
 date: 2026-03-08T12:00:00+01:00
 draft: false
 toc: true
-tags: ["Telegraph", "MekOps", "Reverse engineering", "Electronics"]
+tags: ["telegraph", "MekOps", "reverse_engineering", "electronics"]
 series: telegraph
 thumbnail: images/20260308/clock.webp
 summary: |

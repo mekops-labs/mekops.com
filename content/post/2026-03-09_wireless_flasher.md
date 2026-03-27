@@ -5,7 +5,7 @@ date: 2026-03-09T12:00:00+01:00
 draft: false
 toc: true
 series: telegraph
-tags: ["Telegraph", "Electronics", "Reverse engineering", "Wireless"]
+tags: ["telegraph", "electronics", "reverse_engineering", "wireless"]
 thumbnail: images/20260309/hazk_with_esp.webp
 summary: |
     Let’s be honest: the reality of hardware reverse engineering usually involves sitting hunched over a cluttered desk,

@@ -23,7 +23,7 @@ sacrificing the performance of C and Rust. To build the next generation of edge 
 embedded engineer, and you cannot just be a cloud architect. You must own the stack from the **Kernel**
 (NuttX/Linux/Rust/C) to the **Microservice** (Go/Wasm) and finally **Operations** (Kubernetes).
 
-### What I Build
+## What I Build
 
 I don't just use tools; I forge them. My work focuses on the intersection of **Kubernetes**, **WebAssembly**, and
 **Real-Time Operating Systems**.
@@ -37,18 +37,30 @@ I don't just use tools; I forge them. My work focuses on the intersection of **K
 * **[SIPHON](https://github.com/mekops-labs/siphon):** A high-performance telemetry pipeline written in Go, designed to
   extract signal from noise in constrained bandwidth environments. -->
 
-### My Philosophy
+## My Philosophy
 
-#### 1. Privacy is an Architecture, Not a Setting.
+### 1. Privacy is an Architecture, Not a Setting.
 I believe that data should be owned by the creator, not the platform. My tools are designed to be self-hosted,
 air-gapped, and audit-friendly. I reject the "cloud-first" default that demands constant connectivity.
 
-#### 2. Complexity Should Be Optional.
+### 2. Complexity Should Be Optional.
 Modern DevOps is drowning in abstraction. I prefer **"Boring Technology"**—simple binaries, typed interfaces, and
 standard protocols (MQTT, HTTP, POSIX). If it requires a SaaS subscription to run, I won't use it.
 
-#### 3. The Hardware Matters.
+### 3. The Hardware Matters.
 Software optimization is a lost art. I write code that respects the silicon it runs on. Whether it's porting **Apache
 NuttX** to a new LoRa pager or shaving bytes off a Wasm binary, I care about the cycles.
+
+## Security & Verification
+
+I sign my git commits and compiled binaries using GPG. You can use my public key to verify my signatures or send me
+encrypted security disclosures.
+
+**Fingerprint:** `CA8D 4B52 821C 2AA5 C7F3  E840 81B7 3100 5D22 97C5`
+
+You can fetch the public key directly from this domain:
+```bash
+curl -sL [https://mekops.com/pgp.txt](https://mekops.com/pgp.txt) | gpg --import
+```
 
 ---

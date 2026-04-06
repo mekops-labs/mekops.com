@@ -4,7 +4,6 @@ description: "Bare-metal reverse engineering, edge gateways, Kubernetes operator
 
 cascade:
   type: "projects"
-  toc: true
   author: "Kamil Wcisło"
   hiddenFromHomePage: true
   showDate: false

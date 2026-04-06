@@ -1,0 +1,56 @@
+<ul class="docs-children-grid">
+  {{ range .Page.RegularPages.ByWeight }}
+    <li>
+      <a href="{{ .RelPermalink }}" class="doc-card">
+        <h3>{{ .Title }}</h3>
+        {{ if .Description }}
+          <p>{{ .Description }}</p>
+        {{ end }}
+      </a>
+    </li>
+  {{ end }}
+</ul>
+
+<style>
+  .docs-children-grid {
+    list-style: none !important;
+    padding: 0 !important;
+    margin: 2rem 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+  }
+
+  .doc-card {
+    display: block;
+    padding: 1.25rem;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    background-color: #1e293b;
+    text-decoration: none !important;
+    transition: all 0.2s ease;
+    height: 100%;
+    box-sizing: border-box;
+  }
+
+  .doc-card:hover {
+    background-color: #334155;
+    border-color: #475569;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+
+  .doc-card h3 {
+    margin: 0 0 0.5rem 0 !important;
+    color: #e2e8f0 !important;
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+
+  .doc-card p {
+    margin: 0 !important;
+    color: #94a3b8 !important;
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+</style>

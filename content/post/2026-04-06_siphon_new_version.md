@@ -16,6 +16,8 @@ summary: |
     most importantly, packaged the entire engine as a native Home Assistant Add-on.
 ---
 
+> [Siphon's project page](/projects/siphon).
+
 Building telemetry pipelines is inherently messy. Every new sensor, webhook, or external API wants to dictate how you
 receive data. For the last few months, Siphon existed to solve that problem by acting as a rigid, decoupled gateway
 between the chaotic outside world and your pristine internal data bus, but it evolved.
@@ -99,15 +101,15 @@ repository](https://github.com/mekops-labs/siphon-ha-addon).
 ### Zero-Setup Auth & Environment Isolation
 
 If Siphon detects the Mosquitto broker Add-on, it automatically injects the credentials into the environment. You use
-`%%MQTT_HOST%%`, `%%MQTT_PORT%%`, `%%MQTT_USER%%`, and %%MQTT_PASS%% in your config without ever hardcoding a password.
-Furthermore, you can define external environment variables in your config directly in the Add-on UI, keeping your
-config.yaml clean and safe to commit to version control. The defined variables could be injected to config using
+`%%MQTT_HOST%%`, `%%MQTT_PORT%%`, `%%MQTT_USER%%`, and `%%MQTT_PASS%%` in your config without ever hardcoding a
+password. Furthermore, you can define external environment variables in your config directly in the Add-on UI, keeping
+your config.yaml clean and safe to commit to version control. The defined variables could be injected to config using
 `%%ENV_VARIABLE%%` syntax.
 
 ### The Native hass Collector
 
-Because running as an Add-on grants Siphon a `$SUPERVISOR_TOKEN`, I wrote a new native hass collector. It leverages this
-token to poll Home Assistant entities directly via the internal REST API. No Long-Lived Access Tokens, no external
+Because running as an Add-on grants Siphon a `$SUPERVISOR_TOKEN`, I wrote a new native `hass` collector. It leverages
+this token to poll Home Assistant entities directly via the internal REST API. No Long-Lived Access Tokens, no external
 network calls. Just clean, local, secure polling.
 
 ```yaml

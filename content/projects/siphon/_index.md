@@ -7,8 +7,8 @@ description: "A zero-trust edge gateway and telemetry pipeline."
 layout: "single"
 summary: |
   Siphon is a modular IoT ETL (Extract, Transform, Load) engine in Go.
-  It ingests data (MQTT, File, Shell), normalizes it via dynamic parsers
-  (JSONPath, Regex), and dispatches it to sinks (REST, MQTT).
+  It ingests data (MQTT, REST, Webhook, File, Shell, Home Assistant), normalizes it via dynamic parsers
+  (JSONPath, Regex), and dispatches it to sinks (MQTT, Home Assistant Auto-Discovery, Gotify, Ntfy, and more).
 ---
 
 ![::project-logo](projects/siphon/siphon.webp)
@@ -28,9 +28,6 @@ Explore the official guides to understand the V2 event bus, deploy the daemon, a
 
 ## Roadmap
 
-The project is still WIP. My current direction is to make it a viable Home Assistant extension with support for MQTT
-auto discovery, then I plan to polish the project.
-
 ### Phase 1: Core Engine Refactor (V2 Architecture)
 
 **Focus: Implementing the Hybrid Event Bus and the new linear pipeline configuration.**
@@ -45,14 +42,16 @@ auto discovery, then I plan to polish the project.
 
 **Focus: Seamless integration, auto-discovery, and providing a premium Add-on experience.**
 
-- ☐ HA Config Structs: Define DiscoveryConfig and map YAML fields for HA metadata (Device Class, Node ID, etc.).
-- ☐ HA MQTT Payloads: Implement JSON-tagged DiscoveryPayload and DevicePayload structs.
-- ☐ MQTT Reliability: Implement Last Will and Testament (LWT) logic in the MQTT Sink.
-- ☐ Auto-Discovery Hooks: Create Announce() method to publish retained discovery configs upon MQTT connection.
-- ✅ Add-on Repository: Create the standalone HA Add-on structure.
-- ✅ Ingress Web Server: Implement an embedded Go web server in pkg/editor.
-- ✅ Embedded UI: Create an index.html using Ace.js for live config.yaml editing via HA Ingress.
-- ✅ Hass Collector: Directly attach to Home Assistant API to get entity states.
+- ✅ HA Config Structs: DiscoveryConfig and HA metadata fields (Device Class, Node ID, Unit, Icon, etc.).
+- ✅ HA MQTT Payloads: Auto-Discovery JSON payload published on MQTT connect, retained.
+- ✅ MQTT Reliability: Last Will and Testament (LWT) implemented in the `hass` sink — entity marked "Unavailable" on disconnect.
+- ✅ Auto-Discovery: Discovery config and birth message published automatically on MQTT connection.
+- ✅ Add-on Repository: Standalone HA Add-on with automatic MQTT credential injection from Supervisor.
+- ✅ Ingress Web Server: Embedded Go web server in pkg/editor, accessible via HA Ingress.
+- ✅ Embedded UI: Ace.js-based live config.yaml editor with hot-reload trigger and status line.
+- ✅ Hass Collector: Polls Home Assistant entity states via Supervisor API using `SUPERVISOR_TOKEN`.
+- ✅ Webhook Collector: Hardened HTTP ingress with Bearer auth, rate limiting, payload dedup (SHA-256), and `409 Conflict` on duplicate.
+- ✅ Hass Sink — Unified Topic Handling & Device Triggers: All MQTT topics are auto-generated and overridable. Support for native **MQTT Device Triggers** (`device_automation`) for stateless event pushing; stateful entities use `state_topic` and `availability_topic` with LWT support.
 
 ### Phase 3: API Gateway & Synchronous Processing
 

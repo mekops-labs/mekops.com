@@ -123,8 +123,9 @@ Parameters (`params`):
 - `rps`: Sustained requests per second allowed by the rate limiter (default: unlimited).
 - `burst`: Maximum concurrent burst of requests allowed (default: unlimited).
 - `max_body_mb`: Hard limit on incoming payload size in megabytes (default: unlimited).
-- `dedupe_ttl`: Duration in seconds during which identical payloads (by SHA-256 hash) are silently dropped to prevent
-  duplicate pipeline processing. Returns `200 OK` to the sender regardless.
+- `dedupe_ttl`: Duration in seconds during which identical payloads (by SHA-256 hash) are dropped to prevent
+  duplicate pipeline processing. Returns `409 Conflict` to the sender so the caller can distinguish a processed
+  request from a deduplicated one. Only authenticated callers can observe this response.
 
 Topics (`topics`): A map where the key is the internal bus topic and the value is the HTTP path to expose.
 
@@ -259,11 +260,19 @@ Parameters (`params`):
 {{< github "mekops-labs/siphon/blob/main/pkg/sink/hass/README.md" >}}
 
 Integrates with Home Assistant's **MQTT Auto-Discovery** feature. When Siphon starts, this sink automatically registers
-a device named **"Siphon ETL Engine"** and creates the configured entity under it in Home Assistant. Any data
-dispatched to this sink instantly updates that entity's state.
+a device named **"Siphon ETL Engine"** and creates the configured entity under it in Home Assistant.
 
-Availability is managed automatically via MQTT **Last Will and Testament (LWT)**: Home Assistant will mark the entity
-as "Unavailable" if Siphon disconnects unexpectedly, and "Online" upon reconnection.
+The sink is component-aware: the `component` field determines which MQTT topics are included in the discovery payload
+and where `Send()` routes its output. All topics are **auto-generated** from the base path
+`{discovery_prefix}/{component}/{object_id}` and can be individually overridden.
+
+| Component | Topics in Discovery | `Send()` routes to |
+|---|---|---|
+| `sensor`, `binary_sensor` | `state_topic` | `state_topic` |
+| `device_automation` | `topic` | `topic` |
+
+Availability is managed automatically via MQTT **Last Will and Testament (LWT)**: Home Assistant marks the entity
+"Unavailable" if Siphon disconnects unexpectedly, and "Online" upon reconnection.
 
 > When running as a Home Assistant Add-on, MQTT connection details are injected automatically.
 
@@ -273,19 +282,26 @@ Parameters (`params`):
 - `user`: MQTT username. Supports `%%ENV_VAR%%` substitution.
 - `pass`: MQTT password. Supports `%%ENV_VAR%%` substitution.
 - `object_id` (required): The entity ID in Home Assistant (e.g., `aggregated_power` → `sensor.aggregated_power`).
-- `name` (required): The friendly display name of the entity.
-- `component` (required): The Home Assistant component type (e.g., `sensor`, `binary_sensor`).
+- `name`: The friendly display name of the entity (default: derived from `object_id`).
+- `component`: The Home Assistant component type (default: `sensor`). Controls topic selection — see table above.
 - `device_class`: The HA device class (e.g., `power`, `temperature`).
 - `state_class`: The HA state class (e.g., `measurement`, `total_increasing`).
 - `unit_of_measurement`: The unit displayed in HA (e.g., `W`, `°C`).
 - `icon`: The MDI icon (e.g., `mdi:flash`).
+- `state_topic`: Override the auto-generated state topic.
+- `trigger_type`: HA trigger type (for `device_automation`).
+- `subtype`: HA trigger subtype (for `device_automation`).
+- `payload`: Optional exact-match payload for the trigger.
+- `availability_topic`: Override the auto-generated availability topic.
+
+**Sensor example:**
 
 ```yaml
 sinks:
   custom_ha_sensor:
     type: hass
     params:
-      url: "tcp://%%MQTT_HOST%%:%%MQTT_PORT%%"
+      url: "%%MQTT_HOST%%"
       user: "%%MQTT_USER%%"
       pass: "%%MQTT_PASS%%"
       object_id: "aggregated_power"
@@ -295,6 +311,23 @@ sinks:
       state_class: "measurement"
       unit_of_measurement: "W"
       icon: "mdi:flash"
+      # state_topic auto-generated: homeassistant/sensor/aggregated_power/state
+```
+
+**Device Trigger example** (e.g., Garmin watch trigger):
+
+```yaml
+sinks:
+  garmin_trigger:
+    type: hass
+    params:
+      url: "%%MQTT_HOST%%"
+      object_id: "garmin_button"
+      component: "device_automation"
+      trigger_type: "button_short_press"
+      subtype: "button_1"
+      icon: "mdi:watch"
+      # topic auto-generated: homeassistant/device_automation/garmin_button/action
 ```
 
 ### Example sink definition

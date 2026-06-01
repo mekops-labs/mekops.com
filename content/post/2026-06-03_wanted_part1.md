@@ -13,9 +13,10 @@ tags:
 thumbnail: images/20260603/big-logo.webp
 summary: |
   You wouldn't ship your entire microservices backend as a single statically-linked binary running as root on an
-  unpatched server. Yet that is exactly the architecture running on every ESP32 in your home. Smart-home firmware is
-  stuck in the pre-container era — unversioned, unisolated, un-hot-swappable monoliths on bare metal. This is the first
-  post in a series on WANTED, a runtime that drags embedded firmware into the cloud-native age.
+  unpatched server, right? Yet that is exactly the architecture running on embedded devices everywhere — from smart-home
+  sensors to industrial controllers. Embedded firmware is stuck in the pre-container era — unisolated,
+  un-hot-swappable blobs. This is the first post in a series on WANTED, a new general-purpose
+  cloud-native runtime for embedded devices.
 ---
 
 You wouldn't deploy your entire microservices backend as a single statically-linked binary, running as root, on an
@@ -56,27 +57,39 @@ two of them run different chips, two toolchains. There is no notion of "deploy t
 devices." The unit of deployment is *the entire firmware*, and the unit of failure is *the entire device*.
 
 Compare that to how you ship everything else: a registry, a versioned artifact, a declarative desired state, and a
-control plane that reconciles it. None of that exists in mainstream embedded firmware. You are SSH-ing into prod and
-recompiling, except prod is glued to your wall.
+control plane that reconciles it. Almost none of that exists in mainstream embedded firmware. Your deployment pipeline is a rebuild, a USB flasher, and hope, that device is still within cable reach.
 
 ## The landscape, honestly
 
-The existing tools are good at what they do. They are still monoliths. Here is the architecture, not the marketing:
+The existing tools are good at what they do. Most are still monoliths — and the ones that aren't trade isolation for other constraints. Here's how they compare:
 
-| Dimension | ESPHome | Tasmota | MicroPython | WANTED |
-|-----------|---------|---------|-------------|--------|
-| **Isolation** | None — one binary | None — one binary | None — one shared VM, shared globals | Per-app Wasm linear-memory sandbox |
-| **Portability** | Recompile per board | Per-chip prebuilt binary | Per-port firmware build | Compile once (`wasm32-wasi`), run on any arch |
-| **OTA granularity** | Full firmware reflash | Full firmware reflash | File-level for scripts; reflash for native | Per-app delta layer |
-| **Language** | YAML → generated C++ | C/C++ (config-driven) | Python (subset) | Anything targeting `wasm32-wasi` — C, Rust, Zig, Go, TS |
+| Dimension | [ESPHome](https://esphome.io) | [Tasmota](https://tasmota.github.io) | [MicroPython](https://micropython.org) | [Toit](https://toit.io) | [Thinger.io](https://thinger.io) | **WANTED** |
+|-----------|---------|---------|-------------|------|--------|--------|
+| **Isolation** | None — one binary | None — one binary | None — one shared VM, shared globals | Per-app VM process, private heap | None — thin SDK library in monolithic firmware | Per-app Wasm linear-memory sandbox |
+| **Security model** | No sandboxing; OTA password auth only | No sandboxing; OTA password auth only | No sandbox; scripts access all interpreter APIs | Process separation; platform controls deployment | TLS device tokens; no runtime sandboxing | WASI capability model; deny-by-default hardware access; VFS grants per Wapp; revocable at runtime |
+| **Provisioning & signing** | HTTPS OTA; optional firmware signature (ECDSA); API key / MQTT password | HTTPS OTA; no firmware signing; MQTT credentials | No platform-level signing or device auth | Managed by Toit cloud; proprietary device registration | Cloud-managed device credentials; TLS; self-hostable backend | Ed25519-signed desired state; cross-device replay prevention; TLS transport; Wapp binary signing; optional ATECC608 HW key storage; supervisor is sole trust anchor — Wapps never see credentials |
+| **Device management** | Per-device web UI; Home Assistant integration; no fleet view | Per-device web UI; TasmoAdmin for basic fleet; no declarative management | None — manual per-device access | Full fleet management via Toit cloud (proprietary); device registry, OTA, monitoring | Core feature — device registry, real-time dashboards, remote control, data storage; self-hostable | Declarative fleet management via K8s operator or standalone binary; drift detection and auto-reconciliation; device digital twin |
+| **Connectivity** | WiFi / Ethernet assumed | WiFi / Ethernet assumed | WiFi / Ethernet assumed | WiFi (ESP32 only) | WiFi / Ethernet / cellular (via SDK) | WiFi, Zigbee, Thread and more; protocol also supports constrained links (LoRa, NB-IoT) — offline-first reconciliation works over any transport |
+| **OTA granularity** | Full firmware reflash | Full firmware reflash | File-level for scripts; reflash for native | Per-app container update | Full firmware reflash | Per-app delta layer |
+| **Portability** | Recompile per board | Per-chip prebuilt binary | Per-port firmware build | ESP32 only; proprietary Toit bytecode | Multi-platform client library; recompile per arch | Compile once (`wasm32-wasi`), run on any arch |
+| **Platform layer** | Framework on ESP-IDF / FreeRTOS | Framework on Arduino / ESP-IDF | Port-specific (bare-metal or FreeRTOS) | Custom VM + scheduler | Cloud connectivity SDK; sits on top of existing firmware stack | Runtime on RTOS; targets NuttX (POSIX); HW support inherits from underlying OS |
+| **HW peripherals** | 300+ pre-built component integrations (sensors, displays, LED strips, relays) | Extensive smart-plug and energy-monitoring integrations; Zigbee bridge support | Raw hardware API; bring your own drivers | ESP32 peripherals via community packages | No abstraction — uses whatever the underlying firmware exposes | Native 9P protocol — peripherals are files; a remote BLE adapter or I2C bridge appears as a `/dev` entry; hardware boundaries are not physical |
+| **Language** | YAML → generated C++ | C/C++ (config-driven) | Python (subset) | Toit language only (proprietary) | C++ SDK; REST API for Linux targets | Anything targeting `wasm32-wasi` — C, Rust, Zig, Go, TS |
+| **License** | MIT | GPL-3.0 | MIT | LGPL (VM + Artemis) | Apache 2.0; self-hostable | Apache 2.0 |
 
-MicroPython gets closest to the right idea — you can push a `.py` file without reflashing the C firmware — but every
-script still runs in one shared interpreter with a shared global namespace. One runaway script, one unhandled
-exception, and the others go with it. There is no sandbox, no per-app capability boundary, and the moment you need a
-native module you are back to building and flashing firmware.
+Toit gets closest — per-container isolation means one crashing app leaves the others running, and you can deploy an
+app update without touching the firmware. The constraint is the bytecode: Toit's VM uses a proprietary format only the
+Toit compiler can target, which locks you into one language and one platform. WebAssembly is an open W3C standard —
+any language with an LLVM backend can compile to it, and any architecture with a Wasm host can run it. That single
+design choice is why WANTED's language and portability rows look the way they do.
 
-None of these were designed around isolation, because isolation on a 240 MHz chip with a few hundred kilobytes of RAM
-was assumed to be a luxury you couldn't afford. That assumption is now wrong.
+MicroPython earns a mention because you can push a `.py` file without reflashing the C firmware — but every script
+still runs in one shared interpreter with a shared global namespace. One runaway script, one unhandled exception, and
+the others go with it. There is no sandbox, no per-app capability boundary, and the moment you need a native module
+you are back to building and flashing firmware.
+
+Most of these were not designed around isolation, because isolation on a microcontroller with a few hundred kilobytes
+of RAM was assumed to be a luxury you couldn't afford. That assumption is now wrong.
 
 ## The thesis
 
@@ -92,7 +105,7 @@ and can hot-swap without touching anything else on the device.
 That is not a new idea. It is the idea behind every container platform you already run. The only reason it hasn't
 reached the microcontroller is that nobody built the runtime small enough — until the right primitive showed up.
 
-The primitive is WebAssembly. It was built to run untrusted code safely inside a browser tab: architecture-independent
+The primitive is _WebAssembly_. It was built to run untrusted code safely inside a browser tab: architecture-independent
 bytecode, memory-safe by construction, no shared address space, explicit capability-gated access to the outside world.
 Every one of those properties is exactly what a multi-tenant microcontroller needs. We just have to point it at bare
 metal instead of a browser.
@@ -101,9 +114,21 @@ metal instead of a browser.
 
 ![::project-logo](images/20260603/logo.svg)
 
-That is what **WANTED** — *WebAssembly Nanocontainer Technology for Embedded Devices* — is: a runtime that turns a
-$4 microcontroller into a proper compute node, running isolated, individually deployable applications ("Wapps"),
-delivered and reconciled from a cloud-native control plane using the tooling you already know.
+That is what **WANTED** — *WebAssembly Nanocontainer Technology for Embedded Devices* — is: an open-source runtime
+that turns a microcontroller into a proper compute node, running isolated, individually deployable applications
+("Wapps"), delivered and reconciled from a cloud-native control plane using the tooling you already know.
+
+WANTED is a general-purpose cloud-native framework for embedded devices — IoT, industrial control, edge compute. Smart
+home is where this series starts, not where WANTED ends: it is a target-rich environment for the exact problems WANTED
+solves, the hardware is cheap and accessible, and the legacy deployment story is universally painful. Every lesson
+learned here applies directly to an industrial sensor network or a fleet of edge controllers. Unlike most tools in this space, the control-plane protocol does not assume a reliable high-bandwidth uplink — it is
+designed with Delay-Tolerant Networking (DTN) in mind, operating correctly over LoRa, NB-IoT, and other constrained
+or intermittent links, making it viable for field deployments where WiFi is not an option.
+
+The current release targets ESP32. The architecture is deliberately platform-neutral: `wasm32-wasi` bytecode, the VFS
+capability model, and the control-plane protocol carry no hardware assumptions. ARM Cortex-M, RISC-V, and
+NuttX-hosted targets are on the roadmap — and the same Wapp binary that runs on an ESP32 is designed to run on a
+machine without a general-purpose OS in between.
 
 The model is three layers — a **runtime** on the device, a **supervisor** that manages the apps' lifecycle locally, and
 a **cloud control plane** that pushes desired state down to the fleet:
@@ -124,6 +149,7 @@ graph LR
     subgraph After ["✅ WANTED: A RUNTIME + ISOLATED WAPPS"]
         direction TB
         Cloud[("control plane<br/>(kubectl apply)")]:::cloud
+        Registry[("OCI registry<br/>(Wapp images)")]:::cloud
         Sup("supervisor<br/>(lifecycle + capabilities)"):::host
         Runtime("WANTED runtime<br/>(Wasm host)"):::host
         W1["alarm<br/>logic"]:::wapp
@@ -131,6 +157,7 @@ graph LR
         W3["mqtt<br/>uplink"]:::wapp
 
         Cloud -->|desired state| Sup
+        Registry -->|pull layers| Sup
         Sup --> Runtime
         Runtime --> W1
         Runtime --> W2
@@ -143,10 +170,20 @@ graph LR
 Each Wapp lives in its own Wasm sandbox. A crash in the alarm logic cannot touch the relay driver. A CVE in the uplink's
 TLS stack is patched by shipping one new layer to one app — no reflash, no downtime for the rest. And the alarm logic
 *cannot* drive a relay unless the supervisor explicitly granted it that capability, because hardware access itself is
-mediated, not compiled in.
+mediated, not compiled in. Because every Wapp's state is fully contained within a bounded, isolated memory region, the
+runtime always knows exactly what that Wapp *is* at any point in time — not just what it is doing. That property has
+implications well beyond fault isolation.
 
 That last point — hardware as a capability-gated namespace rather than a direct register poke — is the part that makes
 the isolation real instead of cosmetic. It's also too big for this post.
+
+From a developer's perspective, writing a Wapp feels like writing for any POSIX-compliant OS. Hardware peripherals are
+files: you `open("/dev/i2c0")`, `read()` sensor bytes, `write()` to a GPIO pin. No vendor HAL, no register maps, no
+BSP glue — just standard file descriptors that the runtime hands your app based on what the supervisor granted. And
+it is not only hardware that lives in that namespace. The same code that drives a sensor on a physical device
+compiles and runs unchanged on your development machine. That is not a side effect; it is a design requirement.
+
+The first public release of WANTED is **coming soon**.
 
 ## What's next
 
@@ -156,8 +193,8 @@ This is the opening of a series that builds the full stack from the bytecode up.
   a Wapp actually *is*.
 - **Hardware as files** — the Plan 9-inspired capability model that gates GPIO, I2C, and sockets behind an auditable
   namespace.
-- **OCI images on an ESP32** — packaging and delivering Wapps as layered, delta-updatable images.
-- **The control plane** — from `kubectl apply` to a running process on bare metal.
+- **OCI images on a microcontroller** — packaging and delivering Wapps as layered, delta-updatable images stored in any Docker-compatible registry.
+- **The control plane** — instead of tracking which firmware version is running on which device and updating them one by one, you declare the desired state ("I want version 1.3 of this Wapp running on all nodes in building B") and the system converges to it automatically — detecting drift, retrying failures, and reporting back. For teams already running Kubernetes, WANTED ships an operator that exposes embedded devices as first-class resources, so the same GitOps pipeline that deploys your backend services can also manage embedded devices. For everyone else, a standalone binary provides the same guarantees without requiring a cluster.
 - **Real deployments** — two production nodes running in my house right now.
 - **Checkpoint/Restore** — live-migrating a running process between devices.
 

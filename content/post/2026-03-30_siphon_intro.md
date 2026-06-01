@@ -4,8 +4,8 @@ author: Kamil Wcisło
 date: 2026-03-30
 draft: false
 toc: true
+series: siphon
 tags:
-  - siphon
   - home_assistant
   - etl
   - iot

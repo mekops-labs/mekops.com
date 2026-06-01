@@ -9,7 +9,6 @@ tags:
   - arm
   - reverse_engineering
   - electronics
-  - telegraph
 thumbnail: images/20260311/small_screen_close.webp
 summary: |
   With our custom ESP32 wireless flasher built and tested in Part 2, we finally severed the USB cord.

@@ -4,8 +4,8 @@ author: Kamil Wcisło
 date: 2026-04-21
 draft: false
 toc: true
+series: siphon
 tags:
-  - siphon
   - tailscale
   - garmin
   - home_assistant

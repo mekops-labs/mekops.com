@@ -1,15 +1,16 @@
 ---
 title: "Your Firmware is a Monolith. Fix It."
 author: Kamil Wcisło
-date: 2026-06-03
-draft: true
+date: 2026-06-01
+draft: false
 toc: true
+series: wanted
 tags:
-  - wanted
   - embedded
   - webassembly
   - iot
   - edge-computing
+thumbnail: images/20260603/big-logo.webp
 summary: |
   You wouldn't ship your entire microservices backend as a single statically-linked binary running as root on an
   unpatched server. Yet that is exactly the architecture running on every ESP32 in your home. Smart-home firmware is
@@ -97,6 +98,8 @@ Every one of those properties is exactly what a multi-tenant microcontroller nee
 metal instead of a browser.
 
 ## Enter WANTED
+
+![::project-logo](images/20260603/logo.svg)
 
 That is what **WANTED** — *WebAssembly Nanocontainer Technology for Embedded Devices* — is: a runtime that turns a
 $4 microcontroller into a proper compute node, running isolated, individually deployable applications ("Wapps"),

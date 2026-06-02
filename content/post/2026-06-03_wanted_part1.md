@@ -1,7 +1,7 @@
 ---
 title: "Your Firmware is a Monolith. Fix It."
 author: Kamil Wcisło
-date: 2026-06-01
+date: 2026-06-03
 draft: false
 toc: true
 series: wanted
@@ -199,11 +199,11 @@ This is the opening of a series that builds the full stack from the bytecode up.
   Docker-compatible registry.
 - **The control plane** — instead of tracking which firmware version is running on which device and updating them one by
   one, you declare the desired state ("I want version 1.3 of this Wapp running on all nodes in building B") and the
-  system converges to it automatically — detecting drift, retrying failures, and reporting back. For teams already
-  running Kubernetes, part of the WANTED ecosystem will be an operator that exposes embedded devices as first-class
-  resources, so the same GitOps pipeline that deploys your backend services can also manage those devices. For everyone
-  else, a standalone CLI tool will be provided with the same guarantees and without requiring a k8s cluster.
-- **Real deployments** — two production nodes running in my house right now.
+  system converges to it automatically — detecting drift, retrying failures, and reporting back. Part of the WANTED
+  ecosystem will be an Kubernetes operator that exposes embedded devices as first-class resources, so the same GitOps
+  pipeline that deploys your backend services can also manage those devices. For everyone else, a standalone CLI tool
+  will be provided with the same guarantees and without requiring a k8s cluster.
+- **Real deployments** — nodes running in my house right now.
 - **Checkpoint/Restore** — live-migrating a running process between devices.
 
 The firmware monolith was a reasonable compromise when the hardware couldn't do better. The hardware can do better now.

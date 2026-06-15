@@ -10,7 +10,7 @@ tags:
   - webassembly
   - iot
   - edge-computing
-thumbnail: images/20260603/big-logo.webp
+thumbnail: images/wanted/big-logo.webp
 summary: |
   You wouldn't ship your entire microservices backend as a single statically-linked binary running as root on an
   unpatched server, right? Yet that is exactly the architecture running on embedded devices everywhere — from smart-home
@@ -111,7 +111,7 @@ have to point it at bare metal instead of a browser.
 
 ## Enter WANTED
 
-![::project-logo](images/20260603/logo.svg)
+![::project-logo](images/wanted/logo.svg)
 
 That is what **WANTED** — _WebAssembly Nanocontainer Technology for Embedded Devices_ — is: an open-source runtime
 that turns a microcontroller into a proper compute node, running isolated, individually deployable applications
@@ -188,6 +188,7 @@ compiles and runs unchanged on your development machine. That is not a side effe
 ## What's next
 
 The first public release of WANTED is **coming soon**.
+> UPDATE (2026-06-15): [Wanted is public!](projects/wanted)
 
 This is the opening of a series that builds the full stack from the bytecode up. Over the coming posts:
 

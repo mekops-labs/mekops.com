@@ -2,7 +2,7 @@
 title: "Siphon"
 date: 2026-03-30T18:00:00+02:00
 draft: false
-thumbnail: projects/siphon/siphon.webp
+thumbnail: images/siphon/siphon.webp
 description: "A zero-trust edge gateway and telemetry pipeline."
 layout: "single"
 summary: |
@@ -11,7 +11,7 @@ summary: |
   (JSONPath, Regex), and dispatches it to sinks (MQTT, Home Assistant Auto-Discovery, Gotify, Ntfy, and more).
 ---
 
-![::project-logo](projects/siphon/siphon.webp)
+![::project-logo](images/siphon/siphon.webp)
 {{< github "mekops-labs/siphon" >}} {{< github "mekops-labs/siphon-ha-addon" >}}
 ![::inline-badge](https://img.shields.io/github/v/tag/mekops-labs/siphon?style=flat&label=ver)
 ![::inline-badge](https://img.shields.io/github/license/mekops-labs/siphon)

@@ -25,7 +25,7 @@ It is public now.
 
 I'd rather show you what's solid, what's half-built, and what's still a sketch than dress a side-project runtime up as a
 finished product. So here's the whole thing, warts and all — engine source, the test suite, and the sample Wapp builds:
-- {{< gitlab "mekops/wanted/wanted-engine" >}}
+- {{< github "mekops-labs/wanted-engine" >}}
 
 It's **Apache 2.0** — fork it, ship it, vendor it into something bigger; no license friction with the rest of the
 cloud-native stack.
